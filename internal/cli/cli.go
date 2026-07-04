@@ -16,6 +16,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"runtime"
 	"strings"
 	"syscall"
 	"time"
@@ -633,6 +634,13 @@ func printSummary(w io.Writer, r *report.Report) {
 func color(w io.Writer, code, s string) string {
 	f, ok := w.(*os.File)
 	if !ok || os.Getenv("NO_COLOR") != "" || os.Getenv("TERM") == "dumb" {
+		return s
+	}
+	// Legacy Windows consoles print ANSI escapes literally. Colorize only
+	// when a capable host identifies itself (Windows Terminal, ConEmu,
+	// ANSICON, or an environment that sets TERM, e.g. git-bash).
+	if runtime.GOOS == "windows" && os.Getenv("WT_SESSION") == "" && os.Getenv("TERM") == "" &&
+		os.Getenv("ANSICON") == "" && os.Getenv("ConEmuANSI") == "" {
 		return s
 	}
 	if info, err := f.Stat(); err != nil || info.Mode()&os.ModeCharDevice == 0 {

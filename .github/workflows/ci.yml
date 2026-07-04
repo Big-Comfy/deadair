@@ -24,6 +24,21 @@ jobs:
         run: CGO_ENABLED=0 go build -trimpath ./cmd/deadair
       - name: test
         run: go test -race ./...
+      - name: cross-compile all release targets
+        run: |
+          for t in darwin/amd64 darwin/arm64 linux/amd64 linux/arm64 windows/amd64 windows/arm64; do
+            echo "$t"; GOOS=${t%/*} GOARCH=${t#*/} go build -o /dev/null ./cmd/deadair
+          done
+
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - name: test
+        run: go test ./...
 
   # M1 read-only proof: least-privilege role validated against a live Elastic
   # stack, every write attempt with the deadair credential rejected.

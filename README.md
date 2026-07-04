@@ -54,7 +54,8 @@ promotion rule most environments assume is on. Sample reports in every format ar
 
 ## Get started
 
-Download a binary from the [releases page](../../releases) (or `make build`), then:
+Download a binary from the [releases page](../../releases) — macOS, Linux, and Windows,
+amd64 and arm64 — or `make build`. Then:
 
 ```sh
 deadair setup   # prints the least-privilege role, key command, and env exports

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"testing"
 	"time"
@@ -311,6 +312,9 @@ func TestRedact(t *testing.T) {
 }
 
 func TestWritePermissions(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		t.Skip("POSIX permission bits are not enforced on Windows")
+	}
 	r := fixtureReport(t)
 	path := filepath.Join(t.TempDir(), "report.json")
 	if err := r.Write(path); err != nil {

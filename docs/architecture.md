@@ -93,7 +93,16 @@ covers that case — the value of a future Sentinel backend here is the cross-fl
 
 Rule authoring or tuning advice, ingest pipelines, built-in alerting or dashboards, UI, Splunk.
 
-## Compatibility
+## Requirements and compatibility
 
-CI-tested against pinned Elastic 8.17.x and OpenSearch 2.19.x. Report JSON is additive-only
-once released; exit codes are stable.
+The client is a static binary for macOS, Linux, and Windows (amd64 and arm64). It needs
+network reach to the SIEM's HTTP(S) API and nothing else — no agents, no local services, no
+runtime dependencies, single-digit-MB memory. Release binaries and checksums are on the
+releases page.
+
+On Windows, POSIX permission bits do not apply, so the `0600` hardening on report and state
+files is not enforced there; protect those paths with directory ACLs. ANSI color is enabled
+only under capable hosts (Windows Terminal, ConEmu, or a set `TERM`).
+
+Server side: CI-tested against pinned Elastic 8.17.x and OpenSearch 2.19.x. Report JSON is
+additive-only once released; exit codes are stable.

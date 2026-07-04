@@ -15,12 +15,18 @@ OPENSEARCH_COMPOSE := docker compose -f integration/opensearch-docker-compose.ym
 build:
 	CGO_ENABLED=0 go build -trimpath -ldflags '$(LDFLAGS)' -o bin/$(BIN) ./cmd/deadair
 
+RELEASE_TARGETS := darwin-arm64 darwin-amd64 linux-amd64 linux-arm64 windows-amd64 windows-arm64
+
 release:
 	mkdir -p $(DIST)
-	CGO_ENABLED=0 GOOS=darwin GOARCH=arm64 go build -trimpath -ldflags '$(LDFLAGS)' -o $(DARWIN_ARM64) ./cmd/deadair
-	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -trimpath -ldflags '$(LDFLAGS)' -o $(LINUX_AMD64) ./cmd/deadair
-	CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -trimpath -ldflags '$(LDFLAGS)' -o $(LINUX_ARM64) ./cmd/deadair
-	(cd $(DIST) && shasum -a 256 $(notdir $(DARWIN_ARM64)) $(notdir $(LINUX_AMD64)) $(notdir $(LINUX_ARM64)) > checksums.txt)
+	@for t in $(RELEASE_TARGETS); do \
+		goos=$${t%-*}; goarch=$${t#*-}; ext=""; \
+		[ "$$goos" = "windows" ] && ext=".exe"; \
+		out="$(DIST)/deadair_$(VERSION)_$$t$$ext"; \
+		echo "building $$out"; \
+		CGO_ENABLED=0 GOOS=$$goos GOARCH=$$goarch go build -trimpath -ldflags '$(LDFLAGS)' -o "$$out" ./cmd/deadair || exit 1; \
+	done
+	(cd $(DIST) && shasum -a 256 deadair_$(VERSION)_* > checksums.txt)
 
 test:
 	go test -race ./...

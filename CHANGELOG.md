@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.3.2 - 2026-07-05
+
+- Release builds for all six platforms: macOS, Linux, and Windows on amd64 and arm64.
+- Windows support hardened: ANSI color enabled only under capable consoles (Windows Terminal,
+  ConEmu, or a set TERM); documented that 0600 file hardening does not apply on NTFS.
+- CI now runs the unit suite on Windows and cross-compiles every release target on every push.
+
 ## v0.3.1 - 2026-07-04
 
 First public cut.
