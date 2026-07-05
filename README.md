@@ -160,6 +160,20 @@ load never reaches the SIEM.
 deadair serve --interval 5m   # binds 127.0.0.1:9317
 ```
 
+## Backends
+
+Two backends are supported today, and only these two:
+
+| Backend | Versions | Status |
+|---|---|---|
+| Elastic Security | 8.x | CI-tested against live clusters on every push |
+| OpenSearch Security Analytics | 2.x | CI-tested against live clusters on every push |
+
+Splunk is permanently out of scope. Other SIEMs — Microsoft Sentinel, Google SecOps, and the
+rest — are candidates ordered by demand: if you run one and want deadair on it, [open an
+issue](../../issues). What a backend implementation must provide is documented in
+[architecture.md](docs/architecture.md).
+
 ## Report handling
 
 A deadair report maps detection blind spots. Defaults assume it could leak:
