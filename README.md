@@ -36,7 +36,7 @@ Every source comes with its blast radius: how many enabled rules go blind if it 
 binary, no agents, nothing installed on the SIEM side.
 
 [Example](#example) · [Get started](#get-started) · [Usage](#usage) · [In CI](#in-ci) ·
-[Fleet](#fleet) · [Exporter](#exporter) · [Docs](#docs)
+[Fleet](#fleet) · [Exporter](#exporter) · [Backends](#backends) · [Docs](#docs)
 
 ## Example
 
@@ -55,7 +55,7 @@ promotion rule most environments assume is on. Sample reports in every format ar
 ## Get started
 
 Download a binary from the [releases page](../../releases) — macOS, Linux, and Windows,
-amd64 and arm64 — or `make build`. Then:
+amd64 and arm64 — or `go install github.com/Big-Comfy/deadair/cmd/deadair@latest`. Then:
 
 ```sh
 deadair setup   # prints the least-privilege role, key command, and env exports
@@ -126,6 +126,7 @@ post-acquisition sprawl — `--fleet` scans every instance in one run and rolls 
 recurs. "Dead in 3 of 12 tenants" is one line in one report, not twelve consoles.
 
 ```sh
+deadair check --fleet fleet.json         # verify every instance before reporting
 deadair scan --fleet fleet.json          # scan every instance listed in fleet.json
 deadair serve --fleet fleet.json         # per-instance metrics from one exporter
 ```
@@ -150,6 +151,9 @@ A live scan across three tenants on two backends:
   <img alt="deadair fleet scan: per-tenant summaries and rules dead in 2 of 3 tenants" src="docs/assets/fleet.gif" width="860">
 </p>
 
+For MSSP rollout details, including secret layout, redaction defaults, Alertmanager routing,
+artifact retention, and fleet sizing, see [docs/mssp.md](docs/mssp.md).
+
 ## Exporter
 
 `deadair serve` scans on an interval and exposes Prometheus metrics. Dashboard and alert rules
@@ -162,17 +166,24 @@ deadair serve --interval 5m   # binds 127.0.0.1:9317
 
 ## Backends
 
-Two backends are supported today, and only these two:
+Two backends are supported today, and only these two. Support tiers mean:
 
-| Backend | Versions | Status |
-|---|---|---|
-| Elastic Security | 8.x | CI-tested against live clusters on every push |
-| OpenSearch Security Analytics | 2.x | CI-tested against live clusters on every push |
+| Tier | Meaning |
+|---|---|
+| Supported | backend code, least-privilege docs, live CI proof, rejected-write proof, and additive report compatibility |
+| Preview | real backend proof exists, but field dogfooding is still pending |
+| Experimental | parser/replay or early adapter work; no support claim |
 
-Splunk is permanently out of scope. Other SIEMs — Microsoft Sentinel, Google SecOps, and the
-rest — are candidates ordered by demand: if you run one and want deadair on it, [open an
-issue](../../issues). What a backend implementation must provide is documented in
-[architecture.md](docs/architecture.md).
+| Backend | Versions | Tier | Evidence | MSSP status |
+|---|---|---|---|---|
+| Elastic Security | 8.x | Supported | CI-tested against live clusters on every push, least-privilege role proven with rejected writes | controlled pilot-ready |
+| OpenSearch Security Analytics | 2.x | Supported | CI-tested against live clusters on every push, least-privilege role proven with rejected writes | controlled pilot-ready |
+
+No preview or experimental backends ship today. Microsoft Sentinel is the first planned preview
+target; Google SecOps and the rest are demand-ranked candidates. Splunk is permanently out of
+scope. What a backend implementation must provide is documented in
+[architecture.md](docs/architecture.md). If you run another SIEM and want deadair on it,
+[open an issue](../../issues).
 
 ## Report handling
 
@@ -189,6 +200,7 @@ A deadair report maps detection blind spots. Defaults assume it could leak:
 
 - [Usage guide](docs/usage.md) — every workflow, and what to do about each finding class.
 - [Best practices](docs/best-practices.md) — rollout order, false-positive avoidance, fleets.
+- [MSSP deployment guide](docs/mssp.md) — fleet secrets, redaction, routing, retention, sizing.
 - [Architecture](docs/architecture.md) — the data model, API costs, security properties.
 
 ## License
