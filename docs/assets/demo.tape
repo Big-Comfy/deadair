@@ -14,10 +14,8 @@ Set TypingSpeed 35ms
 Hide
 Type `export PATH="$PWD/bin:$PATH" && clear`
 Enter
-Sleep 500ms
-Show
-
 Type "deadair demo"
-Sleep 400ms
+Show
+Sleep 500ms
 Enter
 Sleep 5s
